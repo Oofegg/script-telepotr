@@ -1,0 +1,27 @@
+local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+
+-- Создаем функцию для последовательного телепорта
+local function teleportSequentially()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+
+    for _, otherPlayer in ipairs(game.Players:GetPlayers()) do
+        if otherPlayer ~= player then
+            local otherCharacter = otherPlayer.Character
+            if otherCharacter and otherCharacter:FindFirstChild("HumanoidRootPart") then
+                rootPart.CFrame = otherCharacter.HumanoidRootPart.CFrame
+                wait(0.05) -- короткая пауза между телепортами (можете изменить значение)
+            end
+        end
+    end
+end
+
+-- Привязываем функцию к нажатию клавиши L
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.L then
+            teleportSequentially()
+        end
+    end
+end)
