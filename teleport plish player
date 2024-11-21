@@ -1,0 +1,35 @@
+local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+
+local function teleportToNearestPlayer()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+
+    for _, otherPlayer in pairs(game.Players:GetPlayers()) do
+        if otherPlayer ~= player then
+            local otherCharacter = otherPlayer.Character
+            if otherCharacter and otherCharacter:FindFirstChild("HumanoidRootPart") then
+                local distance = (rootPart.Position - otherCharacter.HumanoidRootPart.Position).magnitude
+                if distance < shortestDistance then
+                    closestPlayer = otherPlayer
+                    shortestDistance = distance
+                end
+            end
+        end
+    end
+
+    if closestPlayer and closestPlayer.Character and closestPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        rootPart.CFrame = closestPlayer.Character.HumanoidRootPart.CFrame
+    end
+end
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.N then
+            teleportToNearestPlayer()
+        end
+    end
+end)
